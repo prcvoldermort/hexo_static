@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Javascript中的异步操作一--回调 | 果果家 | 记录中</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="Javascript,语法,异步操作">
+    <meta name="description" content="本文翻译自(https://javascript.info/callbacks)[https://javascript.info/callbacks] 回调JavaScript中有许多操作都是异步的，例如下面的loadScript(src):   12345function loadScript(src) &amp;#123;  let script = document.createElement(&apos;s">
+<meta name="keywords" content="Javascript,语法,异步操作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Javascript中的异步操作一--回调">
+<meta property="og:url" content="http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/index.html">
+<meta property="og:site_name" content="果果家">
+<meta property="og:description" content="本文翻译自(https://javascript.info/callbacks)[https://javascript.info/callbacks] 回调JavaScript中有许多操作都是异步的，例如下面的loadScript(src):   12345function loadScript(src) &amp;#123;  let script = document.createElement(&apos;s">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-01-08T04:20:40.864Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Javascript中的异步操作一--回调">
+<meta name="twitter:description" content="本文翻译自(https://javascript.info/callbacks)[https://javascript.info/callbacks] 回调JavaScript中有许多操作都是异步的，例如下面的loadScript(src):   12345function loadScript(src) &amp;#123;  let script = document.createElement(&apos;s">
+    
+        <link rel="alternate" type="application/atom+xml" title="果果家" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide">
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Zhang Yuan</h5>
+          <a href="mailto:prcvoldermort@icloud.com" title="prcvoldermort@icloud.com" class="mail">prcvoldermort@icloud.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/">
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives">
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags">
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories">
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/prcvoldermort" target="_blank">
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://www.weibo.com/" target="_blank">
+                <i class="icon icon-lg icon-weibo"></i>
+                Weibo
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom">
+                <i class="icon icon-lg icon-link"></i>
+                测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Javascript中的异步操作一--回调</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Javascript中的异步操作一--回调</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2019-01-08T04:20:40.000Z" itemprop="datePublished" class="page-time">
+  2019-01-08
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#回调"><span class="post-toc-number">1.</span> <span class="post-toc-text">回调</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#回调中的回调"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">回调中的回调</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#错误处理"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">错误处理</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#嵌套的噩梦"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">嵌套的噩梦</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-Javascript中的异步操作一-回调函数" class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Javascript中的异步操作一--回调</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2019-01-08 12:20:40" datetime="2019-01-08T04:20:40.000Z" itemprop="datePublished">2019-01-08</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style="display:none">
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>本文翻译自(<a href="https://javascript.info/callbacks)[https://javascript.info/callbacks]" target="_blank" rel="noopener">https://javascript.info/callbacks)[https://javascript.info/callbacks]</a></p>
+<h1 id="回调"><a href="#回调" class="headerlink" title="回调"></a>回调</h1><p>JavaScript中有许多操作都是异步的，例如下面的loadScript(src):  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loadScript</span>(<span class="params">src</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">  script.src = src;</span><br><span class="line">  <span class="built_in">document</span>.head.append(script);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数是用来加载新的脚本的，运行时把<code>&lt;script src=&quot;…&quot;&gt;</code>添加到文档流中，当浏览器解析到这个地方时执行。<br>可以这样使用：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 加载并执行脚本</span></span><br><span class="line">loadScript(<span class="string">'/my/script.js'</span>);</span><br></pre></td></tr></table></figure></p>
+<p>这个方法被称为异步函数，因为这个加载脚本的操作不是立刻完成，而是稍后完成的。</p>
+<p>这个方法首先初始化脚本，然后执行代码。在脚本加载的过程中，这个方法下的代码有可能已经执行完毕，如果这个过程非常耗时，那其余的代码也有可能同时执行。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'/my/script.js'</span>);</span><br><span class="line"><span class="comment">// loadScript方法下面的代码不会等待其执行完毕才开始执行</span></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>假设我们想调用通过loadScript方法加载到的代码中的newFunction方法，你会发现下面的代码不会执行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'/my/script.js'</span>); <span class="comment">// 脚本中有"function newFunction() &#123;…&#125;"</span></span><br><span class="line"></span><br><span class="line">newFunction(); <span class="comment">// 没有这个方法！！！</span></span><br></pre></td></tr></table></figure>
+<p>浏览器可能来不及加载完整的脚本，因此立即调用newFunction方法会失败，在当前的情况下，loadScript方法不能追踪代码加载的完成与否，脚本加载并最终执行，这就是这段代码做的事情，但是我们需要知道具体什么时间加载，什么时候开始执行才能正确使用脚本中的新方法和变量。</p>
+<p>我们来为loadScipt方法加上第二个参数callback，来作为脚本加载完后执行的回调。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loadScript</span>(<span class="params">src, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">  script.src = src;</span><br><span class="line"></span><br><span class="line">  script.onload = <span class="function"><span class="params">()</span> =&gt;</span> callback(script);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">document</span>.head.append(script);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在可以将脚本中定义的方法写在回调中来调用它：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'/my/script.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// the callback runs after the script is loaded</span></span><br><span class="line">  newFunction(); <span class="comment">// 现在可以执行了</span></span><br><span class="line">  ...</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这就对了，第二个参数是脚本加载完成后执行的函数(通常是匿名函数).</p>
+<p>以下是一个现实中的可执行的示例:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loadScript</span>(<span class="params">src, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">  script.src = src;</span><br><span class="line">  script.onload = <span class="function"><span class="params">()</span> =&gt;</span> callback(script);</span><br><span class="line">  <span class="built_in">document</span>.head.append(script);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">loadScript(<span class="string">'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.js'</span>, script =&gt; &#123;</span><br><span class="line">  alert(<span class="string">`Cool, the <span class="subst">$&#123;script.src&#125;</span> is loaded`</span>);</span><br><span class="line">  alert( _ ); <span class="comment">// function declared in the loaded script</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这就是所谓的”基于回调的”异步编程方式，一个异步执行的方法应该包括一个回调方法供其执行完毕后调用。</p>
+<p>这里是以loadScript为例来说明的，是一种通行的做法。</p>
+<h2 id="回调中的回调"><a href="#回调中的回调" class="headerlink" title="回调中的回调"></a>回调中的回调</h2><p>那么如何顺序加载两段脚本呢？</p>
+<p>自然而然会想到把第二段loadScript脚本放在第一段loadScript脚本的回调中:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'/my/script.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">script</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  alert(<span class="string">`Cool, the <span class="subst">$&#123;script.src&#125;</span> is loaded, let's load one more`</span>);</span><br><span class="line"></span><br><span class="line">  loadScript(<span class="string">'/my/script2.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">script</span>) </span>&#123;</span><br><span class="line">    alert(<span class="string">`Cool, the second script is loaded`</span>);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>当外层的loadScript加载完毕后，再加载里面的回调。</p>
+<p>那如果再加更多层的脚本呢？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'/my/script.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">script</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  loadScript(<span class="string">'/my/script2.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">script</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">    loadScript(<span class="string">'/my/script3.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">script</span>) </span>&#123;</span><br><span class="line">      <span class="comment">// ...continue after all scripts are loaded</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>每一个新的方法都嵌套在一个回调中，这样多几层还行，再多层就不好使了，随后我们会看到其他的变通方法。</p>
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>在上面的例子中我们没有考虑错误的情况。假如脚本加载失败呢，我们的代码理应对错误做出反应。</p>
+<p>这是可以追踪加载错误的loadScript改进版本代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loadScript</span>(<span class="params">src, callback</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">  script.src = src;</span><br><span class="line"></span><br><span class="line">  script.onload = <span class="function"><span class="params">()</span> =&gt;</span> callback(<span class="literal">null</span>, script);</span><br><span class="line">  script.onerror = <span class="function"><span class="params">()</span> =&gt;</span> callback(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">`Script load error for <span class="subst">$&#123;src&#125;</span>`</span>));</span><br><span class="line"></span><br><span class="line">  <span class="built_in">document</span>.head.append(script);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于成功的加载调用<code>callback(null, script)</code>, 对于失败的加载调用<code>callback(error)</code>.</p>
+<p>使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">loadScript(&apos;/my/script.js&apos;, function(error, script) &#123;</span><br><span class="line">  if (error) &#123;</span><br><span class="line">    // 处理错误</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    // 脚本成功加载</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>以上的用法非常常见，称作”错误优先回调”.</p>
+<p>约定如下：</p>
+<ol>
+<li>回调的第一个参数保留用作错误处理，当错误发生时，调用<code>callback(err)</code></li>
+<li>第二个及后面的参数供成功的情况下使用，然后调用<code>callback(null, result1, result2…)</code></li>
+</ol>
+<p>这样callback方法就可以同时用来报错和返回结果了。</p>
+<h2 id="嵌套的噩梦"><a href="#嵌套的噩梦" class="headerlink" title="嵌套的噩梦"></a>嵌套的噩梦</h2><p>第一眼看上去，这种异步编程模式切实可行，对于一到两层的嵌套看上去不错，但是对于更多层的嵌套就不是这么回事了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'1.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">error, script</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (error) &#123;</span><br><span class="line">    handleError(error);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    loadScript(<span class="string">'2.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">error, script</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (error) &#123;</span><br><span class="line">        handleError(error);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        loadScript(<span class="string">'3.js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">error, script</span>) </span>&#123;</span><br><span class="line">          <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            handleError(error);</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// ...在所有脚本都加载好后执行 (*)</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>上面的代码中：</p>
+<ol>
+<li>加载<code>1.js</code>，如果没有报错，然后</li>
+<li>加载<code>2.js</code>, 如果没有报错，然后</li>
+<li>加载<code>3.js</code>，如果没有报错，然后继续执行</li>
+</ol>
+<p>当嵌套更多的层级时，代码就会越来越难以维护，特别是<code>...</code>处换成包含各种循环、条件判断的真实的代码。</p>
+<p>这就被称作回调地狱或嵌套的噩梦。</p>
+<p>这种代码不是非常好，可以尝试把每一步写成单独的方法来缓解这个问题，像这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">loadScript(<span class="string">'1.js'</span>, step1);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">step1</span>(<span class="params">error, script</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (error) &#123;</span><br><span class="line">    handleError(error);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    loadScript(<span class="string">'2.js'</span>, step2);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">step2</span>(<span class="params">error, script</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (error) &#123;</span><br><span class="line">    handleError(error);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    loadScript(<span class="string">'3.js'</span>, step3);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">step3</span>(<span class="params">error, script</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (error) &#123;</span><br><span class="line">    handleError(error);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ...continue after all scripts are loaded (*)</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这段代码把代码的嵌套写成了单独的方法，做的事情还是一样的。</p>
+<p>这种方法起作用，但代码看起来像是一段撕碎的电子表格，需要眼球跳来跳去，很难阅读。这很不方便，特别是读者不熟悉代码的情况下都不知道眼球应该放哪里。</p>
+<p>还有一个问题是命名为<code>step*</code>的方法是用来避免嵌套噩梦的，都只能用一次，没有人会在方法链外再次使用，因此可能会造成命名空间的混杂。</p>
+<p>我们需要更好的方法来处理这个问题。</p>
+<p>幸运的是，的确有办法可以避免这样的噩梦，那就是下一章介绍的<code>promises（保证）</code>。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2019-01-08T04:20:40.864Z" itemprop="dateUpdated">2019-01-08 12:20:40</time>
+</span><br>
+
+
+        
+        本文完
+        
+    </div>
+    
+    <footer>
+        <a href="http://blog.guoguojia.net">
+            <img src="/img/avatar.jpg" alt="Zhang Yuan">
+            Zhang Yuan
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Javascript/">Javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步操作/">异步操作</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/语法/">语法</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/&title=《Javascript中的异步操作一--回调》 — 果果家&pic=http://blog.guoguojia.net/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/&title=《Javascript中的异步操作一--回调》 — 果果家&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Javascript中的异步操作一--回调》 — 果果家&url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/&via=http://blog.guoguojia.net" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2019/01/03/laravel-best-practices/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Laravel最佳实践</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Valine Comments -->
+    <div class="comments vcomment" id="comments"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <!-- Valine Comments script -->
+    <script>
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+          return GUEST_INFO.indexOf(item) > -1
+        });
+        new Valine({
+            el: '#comments',
+            notify: 'false' == 'true',
+            verify: 'false' == 'true',
+            appId: "XgQFl4po1J3EoNFye430fJHX-gzGzoHsz",
+            appKey: "NkweHAxEJ3Pl98Td2hdyOSfE",
+            avatar: "mm",
+            placeholder: "Just go go",
+            guest_info: guest_info.length == 0 ? GUEST_INFO : guest_info,
+            pageSize: "10"
+        })
+    </script>
+    <!-- Valine Comments end -->
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check" data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style="display:none">
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style="display:none">
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Zhang Yuan &copy; 2019</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/&title=《Javascript中的异步操作一--回调》 — 果果家&pic=http://blog.guoguojia.net/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/&title=《Javascript中的异步操作一--回调》 — 果果家&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Javascript中的异步操作一--回调》 — 果果家&url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/&via=http://blog.guoguojia.net" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://blog.guoguojia.net/2019/01/08/Javascript中的异步操作一-回调函数/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACr0lEQVR42u3aQY7bMBAEQP//05trgoWc7iFn4wClkyHZMksGyHEPX6/4+PrteLr6/szTfd6f+X68Ng48PDy8g6E/3S458x329Lod29Pr6BHg4eHhrfHyW7//gmRmTpaKdjyP5/Hw8PA+hpcU0+1DSd6Ph4eH9z/ykuI4KcfP34mHh4f3b3n5lD0LBZLzeVi8krXg4eHhLXSRPuf1Sn8PDw8P77ir3gYB7RKSh7zD0eLh4eEt8Npw4Xz6LoYV4JNx4uHh4W3w2qG0oepGPJEvTnh4eHh7vPwWs8k9f8Z5S6xYDPDw8PAu8ZKh1H/+46m/3VxVLyF4eHh4y7y2eZ9P3HksO1u0Hj+Lh4eHt8ZrJ/cZ8n2hnMcfxdYrPDw8vGVenltcLnxHTbjoDnh4eHhrvJYxa4y1yJNY5I+FAQ8PD2+Nd7IVIKeeFPF11IuHh4e3wDsZxGw/16wcnwXEeHh4eBu8vIU/iwZmV2ePIwoj8PDw8NZ4+Z//WcnbfrYNKfDw8PD2eHkbbHZ1toGgLdz/ck88PDy8q7x8wm0HlEcM55uuojACDw8P7xIvj2Lz4GC2DOSPYBYf4+Hh4W3wksi13fw0e4iX+3t4eHh4C7312fapfLpvh3UehRS/DB4eHt5kX9PK5tQ2LJi14pKreHh4eNu8NixIkDm1baRFBTceHh7eGq9t9rfLQDut52V6sTMCDw8P7ypv1o5KBpcX5UdduzyMwMPDwzvgfZVHXl6327lOivjHO+Ph4eEt8NoJdzbok2K6aHSdHHh4eHglb7YY5FsHZovHrSgEDw8Pb4/XNsbOH0obTFzLWvDw8PB+nJc0q4rWfhlGRE0vPDw8vA/j5V9wa8k5Kcrx8PDw9niz9n8+oDZrvbwzAg8PD+8q76TAnbWv7sYQF3p9eHh4eCnvF5ak5CmFgiS1AAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '红包即将过期';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '你有一条新的消息';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
